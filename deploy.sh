@@ -29,7 +29,7 @@ fi;
 workingdir=$(pwd)
 reldir=`dirname $0`
 cd $reldir
-
+aws eks update-kubeconfig --region ${APIM_CLUSTER_REGION} --name ${APIM_EKS_CLUSTER_NAME} || { echo 'Failed to update cluster kube config.';  exit 1; }
 eksctl get cluster --region ${APIM_CLUSTER_REGION} -n ${APIM_EKS_CLUSTER_NAME} || { echo 'Cluster does not exists. Please create the cluster before deploying the applications.';  exit 1; }
 kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission || echo "WARNING : Failed to delete nginx admission."
 eksctl scale nodegroup --region ${APIM_CLUSTER_REGION} --cluster ${APIM_EKS_CLUSTER_NAME} --name ng-1 --nodes=1 || { echo 'Failed to scale the node group.';  exit 1; }
@@ -56,7 +56,7 @@ fi;
 
 mysql -h "$dbHost" -P "$dbPort" -u root -p"$dbPassword" < wso2-am-db-cripts.sql || { echo 'Failed ton setup RDS database.';  exit 1; }
 
-aws eks update-kubeconfig --region ${APIM_CLUSTER_REGION} --name ${APIM_EKS_CLUSTER_NAME}
+
 kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=480s ||  { echo 'Nginx service is not ready within the expected time limit.';  exit 1; }
 
 helm repo add wso2 https://helm.wso2.com && helm repo update ||  { echo 'Error while adding WSO2 helm repository to helm.';  exit 1; }
