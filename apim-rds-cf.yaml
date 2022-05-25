@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  pDbUser:
+    Type: String
+  pDbPass:
+    Type: String
+
+Resources:
+  APIMDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      MasterUsername: !Ref pDbUser
+      MasterUserPassword: !Ref pDbPass
+      Engine: MySQL
+      DBInstanceClass: db.t4g.micro
+      StorageType: gp2
+      PubliclyAccessible: True
+      AllocatedStorage: "20"
+      DBInstanceIdentifier: apim-profile-automation-rds
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      Tags:
+      - Key: email
+        Value: tharsanan@wso2.com
+      MultiAZ: false
+      BackupRetentionPeriod: 0
+
+
+Outputs:
+  ApimDBJDBCConnectionString:
+    Description: JDBC connection string for the master database
+    Value: !Join ['', [!GetAtt [APIMDB, Endpoint.Address]]]
+  ApimDBJDBCPort:
+    Description: JDBC port
+    Value: !Join ['', [!GetAtt [APIMDB, Endpoint.Port]]]
