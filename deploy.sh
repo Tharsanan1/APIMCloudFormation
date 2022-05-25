@@ -58,7 +58,7 @@ mysql -h "$dbHost" -P "$dbPort" -u root -p"$dbPassword" < wso2-am-db-cripts.sql 
 
 aws s3 cp s3://apim-test-grid/profile-automation/kube-config ~/.kube/config ||  { echo 'Failed to copy kube config file from S3 bucket.';  exit 1; }
 sed -i 's/v1alpha1/v1beta1/' ~/.kube/config
-kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=240s ||  { echo 'Nginx service is not ready within the expected time limit.';  exit 1; }
+kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=480s ||  { echo 'Nginx service is not ready within the expected time limit.';  exit 1; }
 
 helm repo add wso2 https://helm.wso2.com && helm repo update ||  { echo 'Error while adding WSO2 helm repository to helm.';  exit 1; }
 helm dependency build "kubernetes-apim/${path_to_helm_folder}" ||  { echo 'Error while building helm folder : kubernetes-apim/${path_to_helm_folder}.';  exit 1; }
