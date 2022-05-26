@@ -5,7 +5,7 @@ Parameters:
   pDbPass:
     Type: String
   pDbEngine:
-    type: String
+    Type: String
 
 Resources:
   APIMDB:

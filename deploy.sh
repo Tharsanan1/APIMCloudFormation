@@ -1,11 +1,9 @@
-isEmpty () {
-    if [ ${#1} -ge 1 ];
-        then 
-            return 0;
-    else
-        return 1;
-    fi;
-}
+workingdir=$(pwd)
+reldir=`dirname $0`
+cd $reldir
+
+source ./utils.sh
+
 
 isEmpty "${APIM_EKS_CLUSTER_NAME}";
 flag=$?
@@ -25,10 +23,39 @@ if [ $flag = 1 ];
     then echo "APIM_RDS_STACK_NAME environment variable is empty."; exit 1
 fi;
 
+isEmpty "${path_to_helm_folder}";
+flag=$?
+if [ $flag = 1 ];
+    then echo "Path to helm folder is empty."; exit 1
+fi;
 
-workingdir=$(pwd)
-reldir=`dirname $0`
-cd $reldir
+isEmpty "${product_version}";
+flag=$?
+if [ $flag = 1 ];
+    then echo "Product version is empty."; exit 1
+fi;
+
+isEmpty "${db_engine}";
+flag=$?
+if [ $flag = 1 ];
+    then echo "DB engine value is empty."; exit 1
+fi;
+
+dbDriver=""
+if [ "${db_engine}" = "postgres" ];
+    then 
+        dbDriver="org.postgresql.Driver"
+elif [ "${db_engine}" = "mysql" ];
+    then 
+        dbDriver="com.mysql.cj.jdbc.Driver"
+else
+    echo "The specified DB engine not supported.";
+    exit 1;
+
+
+# Download DB scripts from S3 bucket.
+mkdir "${db_engine}"
+aws s3 cp "s3://apim-test-grid/profile-automation/apim/${product_version}/${db_engine}/" ./ || { echo 'Failed to download DB scripts.';  exit 1; }
 
 # Update kube config file.
 aws eks update-kubeconfig --region ${APIM_CLUSTER_REGION} --name ${APIM_EKS_CLUSTER_NAME} || { echo 'Failed to update cluster kube config.';  exit 1; }
@@ -47,7 +74,8 @@ dbPassword=$(echo $RANDOM | md5sum | head -c 8)
 echo "DB password : $dbPassword"
 
 # Create RDS DB using cloudformation.
-aws cloudformation create-stack --region ${APIM_CLUSTER_REGION} --stack-name ${APIM_RDS_STACK_NAME}   --template-body file://apim-rds-cf.yaml --parameters ParameterKey=pDbUser,ParameterValue=root ParameterKey=pDbPass,ParameterValue="$dbPassword" || { echo 'Failed to create RDS stack.';  exit 1; }
+dbUserName="root"
+aws cloudformation create-stack --region ${APIM_CLUSTER_REGION} --stack-name ${APIM_RDS_STACK_NAME}   --template-body file://apim-rds-cf.yaml --parameters ParameterKey=pDbUser,ParameterValue="$dbUserName" ParameterKey=pDbPass,ParameterValue="$dbPassword"  ParameterKey=pDbEngine,ParameterValue="${db_engine}" || { echo 'Failed to create RDS stack.';  exit 1; }
 
 # Wait for RDS DB to come alive.
 aws cloudformation wait stack-create-complete --region ${APIM_CLUSTER_REGION} --stack-name ${APIM_RDS_STACK_NAME} || { echo 'RDS stack creation timeout.';  exit 1; }
@@ -72,7 +100,7 @@ if [ $flag = 1 ];
 fi;
 
 # NEED CORRECTION
-mysql -h "$dbHost" -P "$dbPort" -u root -p"$dbPassword" < wso2-am-db-cripts.sql || { echo 'Failed ton setup RDS database.';  exit 1; }
+./provision_db_apim.sh "${db_engine}" "$dbPassword" "$dbHost" "$dbUserName" "${product_version}"
 
 # Wait for nginx to come alive.
 kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=480s ||  { echo 'Nginx service is not ready within the expected time limit.';  exit 1; }
@@ -80,7 +108,6 @@ kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.
 # Install APIM using helm.
 helm repo add wso2 https://helm.wso2.com && helm repo update ||  { echo 'Error while adding WSO2 helm repository to helm.';  exit 1; }
 helm dependency build "kubernetes-apim/${path_to_helm_folder}" ||  { echo 'Error while building helm folder : kubernetes-apim/${path_to_helm_folder}.';  exit 1; }
-helm install apim "kubernetes-apim/${path_to_helm_folder}" --set wso2.deployment.am.mysql.hostname="$dbHost" --set wso2.deployment.am.mysql.port="$dbPort" ||  { echo 'Error while instaling APIM to cluster.';  exit 1; }
-
+helm install apim "kubernetes-apim/${path_to_helm_folder}" --set wso2.deployment.am.db.hostname="$dbHost" --set wso2.deployment.am.db.port="$dbPort" --set wso2.deployment.am.db.engine="$db_engine" --set wso2.deployment.am.db.driver="$dbDriver" ||  { echo 'Error while instaling APIM to cluster.';  exit 1; }
 
 cd "$workingdir"
