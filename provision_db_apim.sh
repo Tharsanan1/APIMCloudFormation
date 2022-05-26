@@ -36,10 +36,12 @@ fi;
 
 #Run database scripts for given database engine and product version
 
+echo "running db scripts, $DB_USERNAME $DB_HOST $DB_PORT $DB_ENGINE" 
 if [[ $DB_ENGINE = "postgres" ]]; then
-    psql -U DB_USERNAME -h DB_HOST -p DB_PORT -d postgres -f "./$DB_ENGINE/apim.sql"
+    psql -U "$DB_USERNAME" -h "$DB_HOST" -p "$DB_PORT" -d postgres -f "./$DB_ENGINE/apim.sql"
 elif [[ $DB_ENGINE = "mysql" ]]; then
-    mysql -u DB_USERNAME -pDB_PASSWORD -h DB_HOST -P DB_PORT < "./$DB_ENGINE/apim.sql"
+    echo "running db scripts as mysql, $DB_USERNAME $DB_HOST $DB_PORT $DB_ENGINE" 
+    mysql -u "$DB_USERNAME" -p"$DB_PASSWORD" -h "$DB_HOST" -P "$DB_PORT" < "./$DB_ENGINE/apim.sql"
 elif [[ $DB_ENGINE =~ 'oracle-se' ]]; then
     # DB Engine : Oracle | Product Version : 2.6.0
     echo "Oracle DB Engine Selected! Running WSO2-APIM 2.6.0 DB Scripts for Oracle..."
