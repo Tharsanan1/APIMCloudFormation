@@ -89,14 +89,16 @@ echo "db details DB port : $dbPort, DB host : $dbHost"
 isEmpty "${dbPort}";
 flag=$?
 if [ $flag = 1 ];
-    then echo "Extracted db port value is empty."; exit 1
+    then 
+        echo "Extracted db port value is empty."; exit 1
 fi;
 
 # Validate DB host name.
 isEmpty "${dbHost}";
 flag=$?
 if [ $flag = 1 ];
-    then echo "Extracted DB host is empty."; exit 1
+    then 
+        echo "Extracted DB host is empty."; exit 1
 fi;
 
 # Provision rds db
