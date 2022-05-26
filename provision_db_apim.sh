@@ -3,6 +3,7 @@ DB_ENGINE=$1
 DB_PASSWORD=$2
 DB_HOST=$3
 DB_USERNAME=$4
+DB_PORT=$5
 
 
 workingdir=$(pwd)
@@ -32,6 +33,12 @@ isEmpty $DB_USERNAME;
 flag=$?
 if [ $flag = 1 ];
     then echo "DB username is empty."; exit 1
+fi;
+
+isEmpty $DB_PORT;
+flag=$?
+if [ $flag = 1 ];
+    then echo "DB port is empty."; exit 1
 fi;
 
 #Run database scripts for given database engine and product version
