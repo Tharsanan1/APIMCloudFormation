@@ -4,6 +4,8 @@ Parameters:
     Type: String
   pDbPass:
     Type: String
+  pDbEngine:
+    type: String
 
 Resources:
   APIMDB:
@@ -11,13 +13,12 @@ Resources:
     Properties:
       MasterUsername: !Ref pDbUser
       MasterUserPassword: !Ref pDbPass
-      Engine: MySQL
+      Engine: !Ref pDbEngine
       DBInstanceClass: db.t4g.micro
       StorageType: gp2
       PubliclyAccessible: True
       AllocatedStorage: "20"
       DBInstanceIdentifier: apim-profile-automation-rds
-      AvailabilityZone: !Select [1, !GetAZs ""]
       Tags:
       - Key: email
         Value: tharsanan@wso2.com
