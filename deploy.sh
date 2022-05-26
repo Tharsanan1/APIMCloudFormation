@@ -99,8 +99,8 @@ if [ $flag = 1 ];
     then echo "Extracted DB host is empty."; exit 1
 fi;
 
-# NEED CORRECTION
-./provision_db_apim.sh "${db_engine}" "$dbPassword" "$dbHost" "$dbUserName" "${product_version}"
+# Provision rds db
+./provision_db_apim.sh "${db_engine}" "$dbPassword" "$dbHost" "$dbUserName"
 
 # Wait for nginx to come alive.
 kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=480s ||  { echo 'Nginx service is not ready within the expected time limit.';  exit 1; }

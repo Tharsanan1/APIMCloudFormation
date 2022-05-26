@@ -3,7 +3,6 @@ DB_ENGINE=$1
 DB_PASSWORD=$2
 DB_HOST=$3
 DB_USERNAME=$4
-WSO2_PRODUCT_VERSION=$5
 
 
 workingdir=$(pwd)
@@ -29,12 +28,6 @@ if [ $flag = 1 ];
     then echo "DB host is empty."; exit 1
 fi;
 
-isEmpty $WSO2_PRODUCT_VERSION;
-flag=$?
-if [ $flag = 1 ];
-    then echo "WSO2 product version is empty."; exit 1
-fi;
-
 isEmpty $DB_USERNAME;
 flag=$?
 if [ $flag = 1 ];
@@ -47,7 +40,7 @@ if [[ $DB_ENGINE = "postgres" ]]; then
     psql -U DB_USERNAME -h DB_HOST -p DB_PORT -d postgres -f "./$DB_ENGINE/apim.sql"
 elif [[ $DB_ENGINE = "mysql" ]]; then
     mysql -u DB_USERNAME -pDB_PASSWORD -h DB_HOST -P DB_PORT < "./$DB_ENGINE/apim.sql"
-elif [[ $DB_ENGINE =~ 'oracle-se' ]] && [[ $WSO2_PRODUCT_VERSION = "2.6.0" ]]; then
+elif [[ $DB_ENGINE =~ 'oracle-se' ]]; then
     # DB Engine : Oracle | Product Version : 2.6.0
     echo "Oracle DB Engine Selected! Running WSO2-APIM 2.6.0 DB Scripts for Oracle..."
     # Create users to the required DB
@@ -61,7 +54,7 @@ elif [[ $DB_ENGINE =~ 'oracle-se' ]] && [[ $WSO2_PRODUCT_VERSION = "2.6.0" ]]; t
     echo exit | sqlplus64 'CF_DB_USERNAME/CF_DB_PASSWORD@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=CF_DB_HOST)(Port=CF_DB_PORT))(CONNECT_DATA=(SID=WSO2AMDB)))' @/home/ubuntu/apim/apim260/apim_oracle_user.sql
     echo exit | sqlplus64 'WSO2AM_COMMON_DB/CF_DB_PASSWORD@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=CF_DB_HOST)(Port=CF_DB_PORT))(CONNECT_DATA=(SID=WSO2AMDB)))' @/home/ubuntu/apim/apim260/apim_oracle_common_db.sql
     echo exit | sqlplus64 'WSO2AM_APIMGT_DB/CF_DB_PASSWORD@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=CF_DB_HOST)(Port=CF_DB_PORT))(CONNECT_DATA=(SID=WSO2AMDB)))' @/home/ubuntu/apim/apim260/apim_oracle_apimgt_db.sql
-elif [[ $DB_ENGINE =~ 'sqlserver-se' ]] && [[ $WSO2_PRODUCT_VERSION = "2.6.0" ]]; then
+elif [[ $DB_ENGINE =~ 'sqlserver-se' ]]; then
     # DB Engine : SQLServer | Product Version : 2.6.0
     echo "SQL Server DB Engine Selected! Running WSO2-APIM 2.6.0 DB Scripts for SQL Server..."
     sqlcmd -S CF_DB_HOST -U CF_DB_USERNAME -P CF_DB_PASSWORD -i /home/ubuntu/apim/apim260/apim_sql_server.sql
