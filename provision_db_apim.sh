@@ -45,6 +45,7 @@ fi;
 
 echo "running db scripts, $DB_USERNAME $DB_HOST $DB_PORT $DB_ENGINE" 
 if [[ $DB_ENGINE = "postgres" ]]; then
+    export PGPASSWORD=$DB_PASSWORD
     psql -U "$DB_USERNAME" -h "$DB_HOST" -p "$DB_PORT" -d postgres -f "./$DB_ENGINE/apim.sql"
 elif [[ $DB_ENGINE = "mysql" ]]; then
     echo "running db scripts as mysql, $DB_USERNAME $DB_HOST $DB_PORT $DB_ENGINE" 
