@@ -51,6 +51,7 @@ elif [ "${db_engine}" = "mysql" ];
 else
     echo "The specified DB engine not supported.";
     exit 1;
+fi;
 
 
 # Download DB scripts from S3 bucket.
