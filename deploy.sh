@@ -43,14 +43,20 @@ fi;
 
 dbDriver=""
 driverUrl=""
+dbType=""
+jdbcProtocol=""
 if [ "${db_engine}" = "postgres" ];
     then 
         dbDriver="org.postgresql.Driver"
         driverUrl="https://repo1.maven.org/maven2/org/postgresql/postgresql/42.3.6/postgresql-42.3.6.jar"
+        dbType="postgre"
+        jdbcProtocol="postgresql"
 elif [ "${db_engine}" = "mysql" ];
     then 
         dbDriver="com.mysql.cj.jdbc.Driver"
         driverUrl="https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.29/mysql-connector-java-8.0.29.jar"
+        dbType="mysql"
+        jdbcProtocol="mysql"
 else
     echo "The specified DB engine not supported.";
     exit 1;
@@ -114,6 +120,6 @@ kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.
 # Install APIM using helm.
 helm repo add wso2 https://helm.wso2.com && helm repo update ||  { echo 'Error while adding WSO2 helm repository to helm.';  exit 1; }
 helm dependency build "kubernetes-apim/${path_to_helm_folder}" ||  { echo 'Error while building helm folder : kubernetes-apim/${path_to_helm_folder}.';  exit 1; }
-helm install apim "kubernetes-apim/${path_to_helm_folder}" --set wso2.deployment.am.db.hostname="$dbHost" --set wso2.deployment.am.db.port="$dbPort" --set wso2.deployment.am.db.engine="$db_engine" --set wso2.deployment.am.db.driver="$dbDriver" --set wso2.deployment.am.db.driver_url="$driverUrl" ||  { echo 'Error while instaling APIM to cluster.';  exit 1; }
+helm install apim "kubernetes-apim/${path_to_helm_folder}" --set wso2.deployment.am.db.hostname="$dbHost" --set wso2.deployment.am.db.port="$dbPort" --set wso2.deployment.am.db.type="$dbType" --set wso2.deployment.am.db.driver="$dbDriver" --set wso2.deployment.am.db.driver_url="$driverUrl"  --set wso2.deployment.am.db.jdbc_protocol="$jdbcProtocol" ||  { echo 'Error while instaling APIM to cluster.';  exit 1; }
 
 cd "$workingdir"
