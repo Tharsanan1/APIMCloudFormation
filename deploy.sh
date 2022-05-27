@@ -62,6 +62,8 @@ else
     exit 1;
 fi;
 
+echo "Details : $dbDriver $driverUrl $dbType $jdbcProtocol";
+
 
 # Download DB scripts from S3 bucket.
 mkdir "${db_engine}"
