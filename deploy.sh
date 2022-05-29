@@ -62,7 +62,7 @@ elif [ "${db_engine}" = "mysql" ];
 elif [ "${db_engine}" = "mssql" ];
     then 
         dbDriver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-        driverUrl="https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/10.2.1.jre11/mssql-jdbc-10.2.1.jre11.jar"
+        driverUrl="https://clojars.org/repo/com/microsoft/sqlserver/sqljdbc4/4.0/sqljdbc4-4.0.jar"
         dbType="mssql"
         jdbcProtocol="sqlserver"
         dbEngine="sqlserver-ex"
