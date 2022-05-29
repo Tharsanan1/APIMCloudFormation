@@ -51,12 +51,21 @@ if [ "${db_engine}" = "postgres" ];
         driverUrl="https://repo1.maven.org/maven2/org/postgresql/postgresql/42.3.6/postgresql-42.3.6.jar"
         dbType="postgre"
         jdbcProtocol="postgresql"
+        dbEngine="postgres"
 elif [ "${db_engine}" = "mysql" ];
     then 
         dbDriver="com.mysql.cj.jdbc.Driver"
         driverUrl="https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.29/mysql-connector-java-8.0.29.jar"
         dbType="mysql"
         jdbcProtocol="mysql"
+        dbEngine="mysql"
+elif [ "${db_engine}" = "mssql" ];
+    then 
+        dbDriver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+        driverUrl="https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/10.2.1.jre8/mssql-jdbc-10.2.1.jre8.jar"
+        dbType="mssql"
+        jdbcProtocol="sqlserver"
+        dbEngine="sqlserver-ex"
 else
     echo "The specified DB engine not supported.";
     exit 1;
@@ -87,7 +96,7 @@ echo "DB password : $dbPassword"
 
 # Create RDS DB using cloudformation.
 dbUserName="root"
-aws cloudformation create-stack --region ${APIM_CLUSTER_REGION} --stack-name ${APIM_RDS_STACK_NAME}   --template-body file://apim-rds-cf.yaml --parameters ParameterKey=pDbUser,ParameterValue="$dbUserName" ParameterKey=pDbPass,ParameterValue="$dbPassword"  ParameterKey=pDbEngine,ParameterValue="${db_engine}" || { echo 'Failed to create RDS stack.';  exit 1; }
+aws cloudformation create-stack --region ${APIM_CLUSTER_REGION} --stack-name ${APIM_RDS_STACK_NAME}   --template-body file://apim-rds-cf.yaml --parameters ParameterKey=pDbUser,ParameterValue="$dbUserName" ParameterKey=pDbPass,ParameterValue="$dbPassword"  ParameterKey=pDbEngine,ParameterValue="$dbEngine" || { echo 'Failed to create RDS stack.';  exit 1; }
 
 # Wait for RDS DB to come alive.
 aws cloudformation wait stack-create-complete --region ${APIM_CLUSTER_REGION} --stack-name ${APIM_RDS_STACK_NAME} || { echo 'RDS stack creation timeout.';  exit 1; }
