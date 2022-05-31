@@ -44,34 +44,54 @@ fi;
 dbDriver=""
 driverUrl=""
 dbType=""
-jdbcProtocol=""
+dbUserNameAPIM="wso2carbon"
+dbPasswordAPIM="wso2carbon"
+dbUserNameAPIMShared="wso2carbon"
+dbPasswordAPIMShared="wso2carbon"
+dbAPIMUrl=""
+dbAPIMDSharedUrl=""
 if [ "${db_engine}" = "postgres" ];
     then 
         dbDriver="org.postgresql.Driver"
         driverUrl="https://repo1.maven.org/maven2/org/postgresql/postgresql/42.3.6/postgresql-42.3.6.jar"
         dbType="postgre"
-        jdbcProtocol="postgresql"
         dbEngine="postgres"
+        dbAPIMUrl="jdbc:postgresql://$dbHost:$dbPort/WSO2AM_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
+        dbAPIMDSharedUrl="jdbc:postgresql://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
 elif [ "${db_engine}" = "mysql" ];
     then 
         dbDriver="com.mysql.cj.jdbc.Driver"
         driverUrl="https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.29/mysql-connector-java-8.0.29.jar"
         dbType="mysql"
-        jdbcProtocol="mysql"
         dbEngine="mysql"
+        dbAPIMUrl="jdbc:mysql://$dbHost:$dbPort/WSO2AM_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
+        dbAPIMDSharedUrl="jdbc:mysql://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
 elif [ "${db_engine}" = "mssql" ];
     then 
         dbDriver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
         driverUrl="https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/10.2.1.jre8/mssql-jdbc-10.2.1.jre8.jar"
         dbType="mssql"
-        jdbcProtocol="sqlserver"
         dbEngine="sqlserver-ex"
+        dbAPIMUrl="jdbc:sqlserver://$dbHost:$dbPort/WSO2AM_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
+        dbAPIMDSharedUrl="jdbc:sqlserver://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
+elif [ "${db_engine}" = "oracle" ];
+    then 
+        dbDriver="oracle.jdbc.driver.OracleDriver"
+        driverUrl="https://download.oracle.com/otn-pub/otn_software/jdbc/215/ojdbc11.jar"
+        dbType="oracle"
+        dbEngine="oracle-se2"
+        dbUserNameAPIM="WSO2AM_DB"
+        dbPasswordAPIM="wso2carbon"
+        dbUserNameAPIMShared="WSO2AM_SHARED_DB"
+        dbPasswordAPIMShared="wso2carbon"
+        dbAPIMUrl="jdbc:oracle:thin://$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
+        dbAPIMDSharedUrl="jdbc:oracle:thin://$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
 else
     echo "The specified DB engine not supported.";
     exit 1;
 fi;
 
-echo "Details : $dbDriver $driverUrl $dbType $jdbcProtocol";
+echo "Details : $dbDriver $driverUrl $dbType";
 
 
 # Download DB scripts from S3 bucket.
@@ -131,6 +151,18 @@ kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.
 # Install APIM using helm.
 helm repo add wso2 https://helm.wso2.com && helm repo update ||  { echo 'Error while adding WSO2 helm repository to helm.';  exit 1; }
 helm dependency build "kubernetes-apim/${path_to_helm_folder}" ||  { echo 'Error while building helm folder : kubernetes-apim/${path_to_helm_folder}.';  exit 1; }
-helm install apim "kubernetes-apim/${path_to_helm_folder}" --set wso2.deployment.am.db.hostname="$dbHost" --set wso2.deployment.am.db.port="$dbPort" --set wso2.deployment.am.db.type="$dbType" --set wso2.deployment.am.db.driver="$dbDriver" --set wso2.deployment.am.db.driver_url="$driverUrl"  --set wso2.deployment.am.db.jdbc_protocol="$jdbcProtocol" ||  { echo 'Error while instaling APIM to cluster.';  exit 1; }
+helm install apim "kubernetes-apim/${path_to_helm_folder}" \
+    --set wso2.deployment.am.db.hostname="$dbHost" \
+    --set wso2.deployment.am.db.port="$dbPort" \
+    --set wso2.deployment.am.db.type="$dbType" \
+    --set wso2.deployment.am.db.driver="$dbDriver" \
+    --set wso2.deployment.am.db.driver_url="$driverUrl" \
+    --set wso2.deployment.am.db.apim.username="$dbUserNameAPIM" \
+    --set wso2.deployment.am.db.apim_shared.username="$dbUserNameAPIMShared" \
+    --set wso2.deployment.am.db.apim.password="$dbPasswordAPIM" \
+    --set wso2.deployment.am.db.apim_shared.password="$dbPasswordAPIMShared" \
+    --set wso2.deployment.am.db.apim.url="$dbAPIMUrl" \
+    --set wso2.deployment.am.db.apim_shared.url="$dbAPIMSharedUrl" \
+    ||  { echo 'Error while instaling APIM to cluster.';  exit 1; }
 
 cd "$workingdir"

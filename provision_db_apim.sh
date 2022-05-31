@@ -54,16 +54,15 @@ elif [[ $DB_ENGINE =~ 'oracle-se' ]]; then
     # DB Engine : Oracle | Product Version : 2.6.0
     echo "Oracle DB Engine Selected! Running WSO2-APIM 2.6.0 DB Scripts for Oracle..."
     # Create users to the required DB
-    echo "DECLARE USER_EXIST INTEGER;"$'\n'"BEGIN SELECT COUNT(*) INTO USER_EXIST FROM dba_users WHERE username='WSO2AM_APIMGT_DB';"$'\n'"IF (USER_EXIST > 0) THEN EXECUTE IMMEDIATE 'DROP USER WSO2AM_APIMGT_DB CASCADE';"$'\n'"END IF;"$'\n'"END;"$'\n'"/" >> /home/ubuntu/apim/apim260/apim_oracle_user.sql
-    echo "DECLARE USER_EXIST INTEGER;"$'\n'"BEGIN SELECT COUNT(*) INTO USER_EXIST FROM dba_users WHERE username='WSO2AM_COMMON_DB';"$'\n'"IF (USER_EXIST > 0) THEN EXECUTE IMMEDIATE 'DROP USER WSO2AM_COMMON_DB CASCADE';"$'\n'"END IF;"$'\n'"END;"$'\n'"/" >> /home/ubuntu/apim/apim260/apim_oracle_user.sql
-    echo "DECLARE USER_EXIST INTEGER;"$'\n'"BEGIN SELECT COUNT(*) INTO USER_EXIST FROM dba_users WHERE username='WSO2AM_STAT_DB';"$'\n'"IF (USER_EXIST > 0) THEN EXECUTE IMMEDIATE 'DROP USER WSO2AM_STAT_DB CASCADE';"$'\n'"END IF;"$'\n'"END;"$'\n'"/" >> /home/ubuntu/apim/apim260/apim_oracle_user.sql
-    echo "CREATE USER WSO2AM_COMMON_DB IDENTIFIED BY CF_DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO WSO2AM_COMMON_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO WSO2AM_COMMON_DB;" >> /home/ubuntu/apim/apim260/apim_oracle_user.sql
-    echo "CREATE USER WSO2AM_APIMGT_DB IDENTIFIED BY CF_DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO WSO2AM_APIMGT_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO WSO2AM_APIMGT_DB;" >> /home/ubuntu/apim/apim260/apim_oracle_user.sql
-    echo "CREATE USER WSO2AM_STAT_DB IDENTIFIED BY CF_DB_PASSWORD;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO WSO2AM_STAT_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO WSO2AM_STAT_DB;" >> /home/ubuntu/apim/apim260/apim_oracle_user.sql
+    echo "DECLARE USER_EXIST INTEGER;"$'\n'"BEGIN SELECT COUNT(*) INTO USER_EXIST FROM dba_users WHERE username='WSO2AM_DB';"$'\n'"IF (USER_EXIST > 0) THEN EXECUTE IMMEDIATE 'DROP USER WSO2AM_DB CASCADE';"$'\n'"END IF;"$'\n'"END;"$'\n'"/" > apim_oracle_user.sql
+    echo "DECLARE USER_EXIST INTEGER;"$'\n'"BEGIN SELECT COUNT(*) INTO USER_EXIST FROM dba_users WHERE username='WSO2AM_SHARED_DB';"$'\n'"IF (USER_EXIST > 0) THEN EXECUTE IMMEDIATE 'DROP USER WSO2AM_SHARED_DB CASCADE';"$'\n'"END IF;"$'\n'"END;"$'\n'"/" >> apim_oracle_user.sql
+    echo "CREATE USER WSO2AM_SHARED_DB IDENTIFIED BY wso2carbon;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO WSO2AM_SHARED_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO WSO2AM_SHARED_DB;" >> apim_oracle_user.sql
+    echo "CREATE USER WSO2AM_DB IDENTIFIED BY wso2carbon;"$'\n'"GRANT CONNECT, RESOURCE, DBA TO WSO2AM_DB;"$'\n'"GRANT UNLIMITED TABLESPACE TO WSO2AM_DB;" >> apim_oracle_user.sql
+
     # Create the tables
-    echo exit | sqlplus64 'CF_DB_USERNAME/CF_DB_PASSWORD@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=CF_DB_HOST)(Port=CF_DB_PORT))(CONNECT_DATA=(SID=WSO2AMDB)))' @/home/ubuntu/apim/apim260/apim_oracle_user.sql
-    echo exit | sqlplus64 'WSO2AM_COMMON_DB/CF_DB_PASSWORD@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=CF_DB_HOST)(Port=CF_DB_PORT))(CONNECT_DATA=(SID=WSO2AMDB)))' @/home/ubuntu/apim/apim260/apim_oracle_common_db.sql
-    echo exit | sqlplus64 'WSO2AM_APIMGT_DB/CF_DB_PASSWORD@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=CF_DB_HOST)(Port=CF_DB_PORT))(CONNECT_DATA=(SID=WSO2AMDB)))' @/home/ubuntu/apim/apim260/apim_oracle_apimgt_db.sql
+    echo exit | sqlplus64 "$DB_USERNAME/$DB_PASSWORD@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=$DB_HOST)(Port=$DB_PORT))(CONNECT_DATA=(SID=ORCL)))" @apim_oracle_user.sql
+    echo exit | sqlplus64 "WSO2AM_SHARED_DB/wso2carbon@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=$DB_HOST)(Port=$DB_PORT))(CONNECT_DATA=(SID=ORCL)))" @"./$DB_ENGINE/apim_am_shared.sql"
+    echo exit | sqlplus64 "WSO2AM_DB/wso2carbon@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=$DB_HOST)(Port=$DB_PORT))(CONNECT_DATA=(SID=ORCL)))" @"./$DB_ENGINE/apim_am.sql"
 elif [[ $DB_ENGINE =~ 'sqlserver-se' ]]; then
     # DB Engine : SQLServer | Product Version : 2.6.0
     echo "SQL Server DB Engine Selected! Running WSO2-APIM 2.6.0 DB Scripts for SQL Server..."
