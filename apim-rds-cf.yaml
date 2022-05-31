@@ -6,6 +6,10 @@ Parameters:
     Type: String
   pDbEngine:
     Type: String
+  pDbVersion:
+    Type: String
+  pDbInstanceClass:
+    Type: String
 
 Resources:
   APIMDB:
@@ -14,8 +18,8 @@ Resources:
       MasterUsername: !Ref pDbUser
       MasterUserPassword: !Ref pDbPass
       Engine: !Ref pDbEngine
-      EngineVersion: !Ref db_version
-      DBInstanceClass: db.t3.small
+      EngineVersion: !Ref pDbVersion
+      DBInstanceClass: !Ref pDbInstanceClass
       StorageType: gp2
       PubliclyAccessible: True
       AllocatedStorage: "20"
