@@ -126,6 +126,31 @@ dbPort=$(aws cloudformation describe-stacks --stack-name "${APIM_RDS_STACK_NAME}
 dbHost=$(aws cloudformation describe-stacks --stack-name "${APIM_RDS_STACK_NAME}" --region "${APIM_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$APIM_RDS_STACK_NAME'`][].Outputs[?OutputKey==`ApimDBJDBCConnectionString`].OutputValue' --output text | xargs)
 echo "db details DB port : $dbPort, DB host : $dbHost"
 
+if [ "${db_engine}" = "postgres" ];
+    then 
+        dbAPIMUrl="jdbc:postgresql://$dbHost:$dbPort/WSO2AM_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
+        dbAPIMDSharedUrl="jdbc:postgresql://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
+elif [ "${db_engine}" = "mysql" ];
+    then 
+        dbAPIMUrl="jdbc:mysql://$dbHost:$dbPort/WSO2AM_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
+        dbAPIMDSharedUrl="jdbc:mysql://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
+elif [ "${db_engine}" = "mssql" ];
+    then 
+        dbAPIMUrl="jdbc:sqlserver://$dbHost:$dbPort/WSO2AM_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
+        dbAPIMDSharedUrl="jdbc:sqlserver://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
+elif [ "${db_engine}" = "oracle" ];
+    then 
+        dbAPIMUrl="jdbc:oracle:thin://$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
+        dbAPIMDSharedUrl="jdbc:oracle:thin://$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
+else
+    echo "The specified DB engine not supported.";
+    exit 1;
+fi;
+
+echo "Details : $dbDriver $driverUrl $dbType";
+
+
+
 # Validate DB Port.
 isEmpty "${dbPort}";
 flag=$?
