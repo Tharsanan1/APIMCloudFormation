@@ -96,7 +96,7 @@ echo "DB password : $dbPassword"
 
 # Create RDS DB using cloudformation.
 dbUserName="root"
-aws cloudformation create-stack --region ${APIM_CLUSTER_REGION} --stack-name ${APIM_RDS_STACK_NAME}   --template-body file://apim-rds-cf.yaml --parameters ParameterKey=pDbUser,ParameterValue="$dbUserName" ParameterKey=pDbPass,ParameterValue="$dbPassword"  ParameterKey=pDbEngine,ParameterValue="$dbEngine" || { echo 'Failed to create RDS stack.';  exit 1; }
+aws cloudformation create-stack --region ${APIM_CLUSTER_REGION} --stack-name ${APIM_RDS_STACK_NAME}   --template-body file://apim-rds-cf.yaml --parameters ParameterKey=pDbUser,ParameterValue="$dbUserName" ParameterKey=pDbPass,ParameterValue="$dbPassword"  ParameterKey=pDbEngine,ParameterValue="$dbEngine" ParameterKey=pDbVersion,ParameterValue="$db_version" || { echo 'Failed to create RDS stack.';  exit 1; }
 
 # Wait for RDS DB to come alive.
 aws cloudformation wait stack-create-complete --region ${APIM_CLUSTER_REGION} --stack-name ${APIM_RDS_STACK_NAME} || { echo 'RDS stack creation timeout.';  exit 1; }

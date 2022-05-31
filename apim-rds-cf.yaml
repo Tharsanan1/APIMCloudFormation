@@ -14,12 +14,14 @@ Resources:
       MasterUsername: !Ref pDbUser
       MasterUserPassword: !Ref pDbPass
       Engine: !Ref pDbEngine
+      EngineVersion: !Ref db_version
       DBInstanceClass: db.t3.small
       StorageType: gp2
       PubliclyAccessible: True
       AllocatedStorage: "20"
       DBInstanceIdentifier: apim-profile-automation-rds
-      LicenseModel: !If [UseLicensedVersion, license-included, !Ref 'AWS::NoValue']
+      LicenseModel:
+        !If [UseLicensedVersion, license-included, !Ref "AWS::NoValue"]
       Tags:
         - Key: email
           Value: tharsanan@wso2.com
