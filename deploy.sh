@@ -121,19 +121,19 @@ echo "db details DB port : $dbPort, DB host : $dbHost"
 if [ "${db_engine}" = "postgres" ];
     then 
         dbAPIMUrl="jdbc:postgresql://$dbHost:$dbPort/WSO2AM_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
-        dbAPIMDSharedUrl="jdbc:postgresql://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
+        dbAPIMSharedUrl="jdbc:postgresql://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
 elif [ "${db_engine}" = "mysql" ];
     then 
         dbAPIMUrl="jdbc:mysql://$dbHost:$dbPort/WSO2AM_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
-        dbAPIMDSharedUrl="jdbc:mysql://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
+        dbAPIMSharedUrl="jdbc:mysql://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
 elif [ "${db_engine}" = "mssql" ];
     then 
         dbAPIMUrl="jdbc:sqlserver://$dbHost:$dbPort/WSO2AM_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
-        dbAPIMDSharedUrl="jdbc:sqlserver://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
+        dbAPIMSharedUrl="jdbc:sqlserver://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
 elif [ "${db_engine}" = "oracle" ];
     then 
         dbAPIMUrl="jdbc:oracle:thin://$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
-        dbAPIMDSharedUrl="jdbc:oracle:thin://$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
+        dbAPIMSharedUrl="jdbc:oracle:thin://$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
 else
     echo "The specified DB engine not supported.";
     exit 1;
