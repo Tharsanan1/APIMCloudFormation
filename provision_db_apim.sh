@@ -66,5 +66,5 @@ elif [[ $DB_ENGINE =~ 'oracle-se' ]]; then
 elif [[ $DB_ENGINE =~ 'sqlserver-se' ]]; then
     # DB Engine : SQLServer | Product Version : 2.6.0
     echo "SQL Server DB Engine Selected! Running WSO2-APIM 2.6.0 DB Scripts for SQL Server..."
-    sqlcmd -S CF_DB_HOST -U CF_DB_USERNAME -P CF_DB_PASSWORD -i /home/ubuntu/apim/apim260/apim_sql_server.sql
+    sqlcmd -S "$DB_HOST" -U "$DB_USERNAME" -P "$DB_PASSWORD" -i "./$DB_ENGINE/apim.sql"
 fi
