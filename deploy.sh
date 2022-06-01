@@ -132,8 +132,8 @@ elif [ "${db_engine}" = "mssql" ];
         dbAPIMSharedUrl="jdbc:sqlserver://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
 elif [ "${db_engine}" = "oracle" ];
     then 
-        dbAPIMUrl="jdbc:oracle:thin://$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
-        dbAPIMSharedUrl="jdbc:oracle:thin://$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
+        dbAPIMUrl="jdbc:oracle:thin:@$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
+        dbAPIMSharedUrl="jdbc:oracle:thin:@$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
 else
     echo "The specified DB engine not supported.";
     exit 1;
