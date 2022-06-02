@@ -128,7 +128,7 @@ elif [ "${db_engine}" = "mysql" ];
         dbAPIMSharedUrl="jdbc:mysql://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
 elif [ "${db_engine}" = "mssql" ];
     then 
-        dbAPIMUrl="jdbc:sqlserver://$dbHost:$dbPort/WSO2AM_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
+        dbAPIMUrl="jdbc:sqlserver://$dbHost:$dbPort;databaseName=WSO2AM_DB;SendStringParametersAsUnicode=false"
         dbAPIMSharedUrl="jdbc:sqlserver://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false;SendStringParametersAsUnicode=false"
 elif [ "${db_engine}" = "oracle" ];
     then 
