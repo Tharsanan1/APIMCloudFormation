@@ -5,22 +5,22 @@ cd $reldir
 source ./utils.sh
 
 
-isEmpty "${APIM_EKS_CLUSTER_NAME}";
+isEmpty "${EKS_CLUSTER_NAME}";
 flag=$?
 if [ $flag = 1 ];
-    then echo "APIM_EKS_CLUSTER_NAME environment variable is empty."; exit 1
+    then echo "EKS_CLUSTER_NAME environment variable is empty."; exit 1
 fi;
 
-isEmpty "${APIM_CLUSTER_REGION}";
+isEmpty "${EKS_CLUSTER_REGION}";
 flag=$?
 if [ $flag = 1 ];
-    then echo "APIM_CLUSTER_REGION environment variable is empty."; exit 1
+    then echo "EKS_CLUSTER_REGION environment variable is empty."; exit 1
 fi;
 
-isEmpty "${APIM_RDS_STACK_NAME}";
+isEmpty "${RDS_STACK_NAME}";
 flag=$?
 if [ $flag = 1 ];
-    then echo "APIM_RDS_STACK_NAME environment variable is empty."; exit 1
+    then echo "RDS_STACK_NAME environment variable is empty."; exit 1
 fi;
 
 isEmpty "${path_to_helm_folder}";
@@ -91,31 +91,17 @@ mkdir "${db_engine}"
 aws s3 cp "s3://apim-test-grid/profile-automation/apim/${product_version}/${db_engine}/" "./${db_engine}/" --recursive || { echo 'Failed to download DB scripts.';  exit 1; }
 
 # Update kube config file.
-aws eks update-kubeconfig --region ${APIM_CLUSTER_REGION} --name ${APIM_EKS_CLUSTER_NAME} || { echo 'Failed to update cluster kube config.';  exit 1; }
-
-# Check whether a cluster exists.
-eksctl get cluster --region ${APIM_CLUSTER_REGION} -n ${APIM_EKS_CLUSTER_NAME} || { echo 'Cluster does not exists. Please create the cluster before deploying the applications.';  exit 1; }
+aws eks update-kubeconfig --region ${EKS_CLUSTER_REGION} --name ${EKS_CLUSTER_NAME} || { echo 'Failed to update cluster kube config.';  exit 1; }
 
 # Delete Nginx admission if it exists.
 kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission || echo "WARNING : Failed to delete nginx admission."
 
 # Scale node group with one EC2 instance.
-eksctl scale nodegroup --region ${APIM_CLUSTER_REGION} --cluster ${APIM_EKS_CLUSTER_NAME} --name ng-1 --nodes=1 || { echo 'Failed to scale the node group.';  exit 1; }
-
-# Create a random password.
-dbPassword=$(echo $RANDOM | md5sum | head -c 8)
-echo "DB password : $dbPassword"
-
-# Create RDS DB using cloudformation.
-dbUserName="root"
-aws cloudformation create-stack --region ${APIM_CLUSTER_REGION} --stack-name ${APIM_RDS_STACK_NAME}   --template-body file://apim-rds-cf.yaml --parameters ParameterKey=pDbUser,ParameterValue="$dbUserName" ParameterKey=pDbPass,ParameterValue="$dbPassword"  ParameterKey=pDbEngine,ParameterValue="$dbEngine" ParameterKey=pDbVersion,ParameterValue="$db_version" ParameterKey=pDbInstanceClass,ParameterValue="$db_instance_class" || { echo 'Failed to create RDS stack.';  exit 1; }
-
-# Wait for RDS DB to come alive.
-aws cloudformation wait stack-create-complete --region ${APIM_CLUSTER_REGION} --stack-name ${APIM_RDS_STACK_NAME} || { echo 'RDS stack creation timeout.';  exit 1; }
+eksctl scale nodegroup --region ${EKS_CLUSTER_REGION} --cluster ${EKS_CLUSTER_NAME} --name ng-1 --nodes=1 || { echo 'Failed to scale the node group.';  exit 1; }
 
 # Extract DB port and DB host name detail.
-dbPort=$(aws cloudformation describe-stacks --stack-name "${APIM_RDS_STACK_NAME}" --region "${APIM_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$APIM_RDS_STACK_NAME'`][].Outputs[?OutputKey==`ApimDBJDBCPort`].OutputValue' --output text | xargs)
-dbHost=$(aws cloudformation describe-stacks --stack-name "${APIM_RDS_STACK_NAME}" --region "${APIM_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$APIM_RDS_STACK_NAME'`][].Outputs[?OutputKey==`ApimDBJDBCConnectionString`].OutputValue' --output text | xargs)
+dbPort=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`ApimDBJDBCPort`].OutputValue' --output text | xargs)
+dbHost=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`ApimDBJDBCConnectionString`].OutputValue' --output text | xargs)
 echo "db details DB port : $dbPort, DB host : $dbHost"
 
 if [ "${db_engine}" = "postgres" ];
