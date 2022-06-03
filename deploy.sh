@@ -146,7 +146,7 @@ if [ $flag = 1 ];
 fi;
 
 # Provision rds db
-./provision_db_apim.sh "${db_engine}" "$dbPassword" "$dbHost" "$dbUserName" "$dbPort"
+./provision_db_apim.sh "${db_engine}" "${DB_PASSWORD}" "$dbHost" "${DB_USERNAME}" "$dbPort"
 
 # Wait for nginx to come alive.
 kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=480s ||  { echo 'Nginx service is not ready within the expected time limit.';  exit 1; }
