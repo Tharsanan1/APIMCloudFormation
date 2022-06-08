@@ -51,7 +51,7 @@ if [[ $DB_ENGINE = "postgres" ]]; then
 elif [[ $DB_ENGINE = "mysql" ]]; then
     echo "running db scripts as mysql, $DB_USERNAME $DB_HOST $DB_PORT $DB_ENGINE" 
     mysql -u "$DB_USERNAME" -p"$DB_PASSWORD" -h "$DB_HOST" -P "$DB_PORT" < "./$DB_ENGINE/apim.sql"
-elif [[ $DB_ENGINE =~ 'oracle-se' ]]; then
+elif [[ $DB_ENGINE =~ 'oracle' ]]; then
     # DB Engine : Oracle | Product Version : 2.6.0
     echo "Oracle DB Engine Selected! Running WSO2-APIM 2.6.0 DB Scripts for Oracle..."
     # Create users to the required DB
@@ -64,7 +64,7 @@ elif [[ $DB_ENGINE =~ 'oracle-se' ]]; then
     echo exit | sqlplus64 "$DB_USERNAME/$DB_PASSWORD@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=$DB_HOST)(Port=$DB_PORT))(CONNECT_DATA=(SID=ORCL)))" @apim_oracle_user.sql
     echo exit | sqlplus64 "WSO2AM_SHARED_DB/wso2carbon@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=$DB_HOST)(Port=$DB_PORT))(CONNECT_DATA=(SID=ORCL)))" @"./$DB_ENGINE/apim_am_shared.sql"
     echo exit | sqlplus64 "WSO2AM_DB/wso2carbon@(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(Host=$DB_HOST)(Port=$DB_PORT))(CONNECT_DATA=(SID=ORCL)))" @"./$DB_ENGINE/apim_am.sql"
-elif [[ $DB_ENGINE =~ 'sqlserver-se' ]]; then
+elif [[ $DB_ENGINE =~ 'mssql' ]]; then
     # DB Engine : SQLServer | Product Version : 2.6.0
     echo "SQL Server DB Engine Selected! Running WSO2-APIM 2.6.0 DB Scripts for SQL Server..."
     sqlcmd -S "$DB_HOST" -U "$DB_USERNAME" -P "$DB_PASSWORD" -i "./$DB_ENGINE/apim.sql"
