@@ -88,7 +88,7 @@ echo "Details : $dbDriver $driverUrl $dbType";
 
 # Download DB scripts from S3 bucket.
 mkdir "${db_engine}"
-aws s3 cp "s3://test-grid-apim/profile-automation/apim/${product_version}/${db_engine}/" "./${db_engine}/" --recursive || { echo 'Failed to download DB scripts.';  exit 1; }
+aws s3 cp "s3://apim-test-grid/profile-automation/apim/${product_version}/${db_engine}/" "./${db_engine}/" --recursive || { echo 'Failed to download DB scripts.';  exit 1; }
 
 # Update kube config file.
 aws eks update-kubeconfig --region ${EKS_CLUSTER_REGION} --name ${EKS_CLUSTER_NAME} || { echo 'Failed to update cluster kube config.';  exit 1; }
