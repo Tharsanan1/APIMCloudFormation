@@ -70,7 +70,7 @@ elif [ "${db_engine}" = "mssql" ];
         dbEngine="sqlserver-ex"
 elif [ "${db_engine}" = "oracle" ];
     then 
-        dbDriver="oracle.jdbc.driver.OracleDriver"
+        dbDriver="oracle.jdbc.OracleDriver"
         driverUrl="https://download.oracle.com/otn-pub/otn_software/jdbc/215/ojdbc11.jar"
         dbType="oracle"
         dbEngine="oracle-se2"
@@ -114,12 +114,12 @@ elif [ "${db_engine}" = "mysql" ];
         dbAPIMSharedUrl="jdbc:mysql://$dbHost:$dbPort/WSO2AM_SHARED_DB?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
 elif [ "${db_engine}" = "mssql" ];
     then 
-        dbAPIMUrl="jdbc:sqlserver://$dbHost:$dbPort;databaseName=WSO2AM_DB;SendStringParametersAsUnicode=false;useSSL=false&amp;requireSSL=false&amp;verifyServerCertificate=false"
-        dbAPIMSharedUrl="jdbc:sqlserver://$dbHost:$dbPort;databaseName=WSO2AM_SHARED_DB;SendStringParametersAsUnicode=false;useSSL=false&amp;requireSSL=false&amp;verifyServerCertificate=false"
+        dbAPIMUrl="jdbc:sqlserver://$dbHost:$dbPort;databaseName=WSO2AM_DB;SendStringParametersAsUnicode=false;encrypt=false"
+        dbAPIMSharedUrl="jdbc:sqlserver://$dbHost:$dbPort;databaseName=WSO2AM_SHARED_DB;;SendStringParametersAsUnicode=false;encrypt=false"
 elif [ "${db_engine}" = "oracle" ];
     then 
-        dbAPIMUrl="jdbc:oracle:thin:@$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
-        dbAPIMSharedUrl="jdbc:oracle:thin:@$dbHost:$dbPort:ORCL?useSSL=false&amp;autoReconnect=true&amp;requireSSL=false&amp;verifyServerCertificate=false"
+        dbAPIMUrl="jdbc:oracle:thin:@$dbHost:$dbPort:ORCL"
+        dbAPIMSharedUrl="jdbc:oracle:thin:@$dbHost:$dbPort:ORCL"
 else
     echo "The specified DB engine not supported.";
     exit 1;
