@@ -155,17 +155,17 @@ kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.
 helm repo add wso2 https://helm.wso2.com && helm repo update ||  { echo 'Error while adding WSO2 helm repository to helm.';  exit 1; }
 helm dependency build "kubernetes-apim/${path_to_helm_folder}" ||  { echo 'Error while building helm folder : kubernetes-apim/${path_to_helm_folder}.';  exit 1; }
 helm install apim "kubernetes-apim/${path_to_helm_folder}" \
-    --set wso2.deployment.am.db.hostname="$dbHost" \
-    --set wso2.deployment.am.db.port="$dbPort" \
-    --set wso2.deployment.am.db.type="$dbType" \
-    --set wso2.deployment.am.db.driver="$dbDriver" \
-    --set wso2.deployment.am.db.driver_url="$driverUrl" \
-    --set wso2.deployment.am.db.apim.username="$dbUserNameAPIM" \
-    --set wso2.deployment.am.db.apim_shared.username="$dbUserNameAPIMShared" \
-    --set wso2.deployment.am.db.apim.password="$dbPasswordAPIM" \
-    --set wso2.deployment.am.db.apim_shared.password="$dbPasswordAPIMShared" \
-    --set wso2.deployment.am.db.apim.url="$dbAPIMUrl" \
-    --set wso2.deployment.am.db.apim_shared.url="$dbAPIMSharedUrl" \
+    --set wso2.deployment.am.cp.db.hostname="$dbHost" \
+    --set wso2.deployment.am.cp.db.port="$dbPort" \
+    --set wso2.deployment.am.cp.db.type="$dbType" \
+    --set wso2.deployment.am.cp.db.driver="$dbDriver" \
+    --set wso2.deployment.am.cp.db.driver_url="$driverUrl" \
+    --set wso2.deployment.am.cp.db.apim.username="$dbUserNameAPIM" \
+    --set wso2.deployment.am.cp.db.apim_shared.username="$dbUserNameAPIMShared" \
+    --set wso2.deployment.am.cp.db.apim.password="$dbPasswordAPIM" \
+    --set wso2.deployment.am.cp.db.apim_shared.password="$dbPasswordAPIMShared" \
+    --set wso2.deployment.am.cp.db.apim.url="$dbAPIMUrl" \
+    --set wso2.deployment.am.cp.db.apim_shared.url="$dbAPIMSharedUrl" \
     --set wso2.deployment.dependencies.cluster_mysql=false \
     --set wso2.deployment.am.trafficmanager.livenessProbe.initialDelaySeconds=300 \
     --set wso2.deployment.am.trafficmanager.readinessProbe.initialDelaySeconds=300 \
