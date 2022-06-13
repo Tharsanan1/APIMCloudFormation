@@ -166,7 +166,11 @@ helm install apim "kubernetes-apim/${path_to_helm_folder}" \
     --set wso2.deployment.am.db.apim_shared.password="$dbPasswordAPIMShared" \
     --set wso2.deployment.am.db.apim.url="$dbAPIMUrl" \
     --set wso2.deployment.am.db.apim_shared.url="$dbAPIMSharedUrl" \
-    --set wso2.deployment.dependencies.db="$db_engine" \
+    --set wso2.deployment.dependencies.cluster_mysql=false \
+    --set wso2.deployment.am.trafficmanager.livenessProbe.initialDelaySeconds=300 \
+    --set wso2.deployment.am.trafficmanager.readinessProbe.initialDelaySeconds=300 \
+    --set wso2.deployment.am.cp.startupProbe.initialDelaySeconds=200 \
+    --set wso2.deployment.am.cp.readinessProbe.initialDelaySeconds=200 \
     ||  { echo 'Error while instaling APIM to cluster.';  exit 1; }
 
 cd "$workingdir"
