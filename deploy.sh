@@ -174,6 +174,7 @@ helm install apim "kubernetes-apim/${path_to_helm_folder}" \
     --set wso2.deployment.am.startupProbe.initialDelaySeconds=200 \
     --set wso2.deployment.am.startupProbe.periodSeconds=10 \
     --set wso2.deployment.am.readinessProbe.initialDelaySeconds=200 \
+    --set wso2.deployment.dependencies.nfsServerProvisioner=false \
     ||  { echo 'Error while instaling APIM to cluster.';  exit 1; }
 
 cd "$workingdir"
