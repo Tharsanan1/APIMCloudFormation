@@ -99,6 +99,9 @@ kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission || echo
 # Scale node group with one EC2 instance.
 eksctl scale nodegroup --region ${EKS_CLUSTER_REGION} --cluster ${EKS_CLUSTER_NAME} --name ng-1 --nodes=1 || { echo 'Failed to scale the node group.';  exit 1; }
 
+# Install nginx ingress controller
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.4/deploy/static/provider/aws/deploy.yaml || { echo "failed to install nginx ingress controller." ; exit 1 ; }
+
 # Extract DB port and DB host name detail.
 dbPort=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCPort`].OutputValue' --output text | xargs)
 dbHost=$(aws cloudformation describe-stacks --stack-name "${RDS_STACK_NAME}" --region "${EKS_CLUSTER_REGION}" --query 'Stacks[?StackName==`'$RDS_STACK_NAME'`][].Outputs[?OutputKey==`TestgridDBJDBCConnectionString`].OutputValue' --output text | xargs)
