@@ -5,6 +5,7 @@ cd $reldir
 echo "Uninstalling APIM in cluster."
 helm uninstall "${product_name}" || true
 
+echo "Delete fargate profile."
 eksctl delete fargateprofile  --name "${product_name}-fargate-profile" --cluster "${EKS_CLUSTER_NAME}" --region ${EKS_CLUSTER_REGION}
 
 cd "$workingdir"
