@@ -16,6 +16,7 @@ do
         then 
             kubectl logs "$podName" > "logs/$dateWithMinute-$podName.txt"
             aws s3 cp "logs/$dateWithMinute-$podName.txt" "s3://apim-test-grid/profile-automation/logs/$date/"
+            echo "Uploaded $dateWithMinute-$podName.txt to S3."
         fi
     fi
 done
