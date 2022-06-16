@@ -2,6 +2,25 @@ workingdir=$(pwd)
 reldir=`dirname $0`
 cd $reldir
 
+# Upload running pod's logs to S3.
+kubectl get pods -l product=apim -o custom-columns=:metadata.name > podNames.txt
+dateWithMinute=$(date +"%Y_%m_%d_%M_%S")
+date=$(date +"%Y_%m_%d")
+mkdir -p logs
+cat podNames.txt | while read podName 
+do
+    if [[ "$podName" != "" ]];
+    then 
+        phase=$(kubectl get pods "$podName" -o json | jq -r '.status | .phase')
+        if [[ "$phase" == "Running" ]];
+        then 
+            kubectl logs "$podName" > "logs/$dateWithMinute-$podName.txt"
+            aws s3 cp "logs/$dateWithMinute-$podName.txt" "s3://apim-test-grid/profile-automation/logs/$date/"
+        fi
+    fi
+done
+
+
 echo "Uninstalling APIM in cluster."
 helm uninstall "${product_name}" -n="${kubernetes_namespace}" || true
 
