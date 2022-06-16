@@ -4,7 +4,7 @@ reldir=`dirname $0`
 cd $reldir
 
 # Upload running pod's logs to S3.
-kubectl get pods -l product=apim -o custom-columns=:metadata.name > podNames.txt
+kubectl get pods -l product=apim -n="${kubernetes_namespace}"  -o custom-columns=:metadata.name > podNames.txt
 dateWithMinute=$(date +"%Y_%m_%d_%M_%S")
 date=$(date +"%Y_%m_%d")
 mkdir -p logs
@@ -15,9 +15,11 @@ do
         phase=$(kubectl get pods "$podName" -o json | jq -r '.status | .phase')
         if [[ "$phase" == "Running" ]];
         then 
-            kubectl logs "$podName" > "logs/$dateWithMinute-$podName.txt"
+            kubectl logs "$podName" -n="${kubernetes_namespace}" > "logs/$dateWithMinute-$podName.txt"
             aws s3 cp "logs/$dateWithMinute-$podName.txt" "s3://apim-test-grid/profile-automation/logs/$date/"
             echo "Uploaded $dateWithMinute-$podName.txt to S3."
+        else
+            echo "$podName is not running. Its in $phase phase."
         fi
     fi
 done
