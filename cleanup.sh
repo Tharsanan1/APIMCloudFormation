@@ -1,3 +1,4 @@
+#!/bin/bash
 workingdir=$(pwd)
 reldir=`dirname $0`
 cd $reldir
