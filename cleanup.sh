@@ -12,7 +12,7 @@ cat podNames.txt | while read podName
 do
     if [[ "$podName" != "" ]];
     then 
-        phase=$(kubectl get pods "$podName" -o json | jq -r '.status | .phase')
+        phase=$(kubectl get pods "$podName" -n="${kubernetes_namespace}" -o json | jq -r '.status | .phase')
         if [[ "$phase" == "Running" ]];
         then 
             kubectl logs "$podName" -n="${kubernetes_namespace}" > "logs/$dateWithMinute-$podName.txt"
