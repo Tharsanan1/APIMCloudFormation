@@ -5,7 +5,7 @@ cd $reldir
 
 # Upload running pod's logs to S3.
 kubectl get pods -l product=apim -n="${kubernetes_namespace}"  -o custom-columns=:metadata.name > podNames.txt
-dateWithMinute=$(date +"%Y_%m_%d_%M_%S")
+dateWithMinute=$(date +"%Y_%m_%d_%H_%M")
 date=$(date +"%Y_%m_%d")
 mkdir -p logs
 cat podNames.txt | while read podName 
